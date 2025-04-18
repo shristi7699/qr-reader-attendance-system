@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}My QR Code{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">My QR Code</h3>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ url_for('static', filename='qr_codes/' + current_user.username + '.png') }}" 
+                         alt="Student QR Code" 
+                         class="img-fluid mb-3" 
+                         style="max-width: 300px;">
+                    <p class="text-muted">This QR code contains your unique identifier. Present this to the admin for attendance marking.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('static', filename='qr_codes/' + current_user.username + '.png') }}" 
+                           download="{{ current_user.username }}_qr_code.png" 
+                           class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download QR Code
+                        </a>
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

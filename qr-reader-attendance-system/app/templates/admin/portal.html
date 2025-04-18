@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">Admin Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Attendance</h5>
+                    <h2 class="card-text">{{ stats.today_attendance }}</h2>
+                    <p class="card-text">Students present today</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <h2 class="card-text">{{ stats.total_students }}</h2>
+                    <p class="card-text">Registered students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Attendance</h5>
+                    <h2 class="card-text">{{ stats.monthly_attendance }}</h2>
+                    <p class="card-text">Last 30 days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin.scan_attendance') }}" class="btn btn-primary">
+                            <i class="fas fa-qrcode me-2"></i>Scan QR Code
+                        </a>
+                        <a href="{{ url_for('admin.view_attendance') }}" class="btn btn-info">
+                            <i class="fas fa-list me-2"></i>View Attendance Records
+                        </a>
+                        <a href="{{ url_for('admin.generate_report') }}" class="btn btn-success">
+                            <i class="fas fa-file-excel me-2"></i>Generate Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for attendance in recent_attendance %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ attendance.user.name }}</h6>
+                                <small>{{ attendance.date.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <p class="mb-1">
+                                Check-in: {{ attendance.check_in.strftime('%H:%M') if attendance.check_in else 'Not checked in' }}
+                                {% if attendance.check_out %}
+                                | Check-out: {{ attendance.check_out.strftime('%H:%M') }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

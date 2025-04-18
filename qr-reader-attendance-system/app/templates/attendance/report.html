@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Report - QR Attendance System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Attendance Report</h5>
+                <form class="row g-3" method="GET">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" 
+                               value="{{ start_date }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" 
+                               value="{{ end_date }}">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="exportToCSV()">
+                            <i class="fas fa-file-export me-2"></i>Export CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Status</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in attendances %}
+                            <tr>
+                                <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ record.user.name }}</td>
+                                <td>{{ record.check_in.strftime('%I:%M %p') }}</td>
+                                <td>{{ record.check_out.strftime('%I:%M %p') if record.check_out else '-' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if record.status == 'present' else 'warning' }}">
+                                        {{ record.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if record.check_out %}
+                                        {% set duration = (record.check_out - record.check_in).total_seconds() / 3600 %}
+                                        {{ "%.1f"|format(duration) }} hours
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function exportToCSV() {
+    const table = document.getElementById('attendance-table');
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    for (const row of rows) {
+        const cols = row.querySelectorAll('td, th');
+        const rowData = Array.from(cols).map(col => {
+            let text = col.textContent.trim();
+            // Remove any commas and wrap in quotes if contains special characters
+            text = text.replace(/,/g, '');
+            if (text.includes(' ') || text.includes('"')) {
+                text = `"${text}"`;
+            }
+            return text;
+        });
+        csv.push(rowData.join(','));
+    }
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `attendance_report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %} 

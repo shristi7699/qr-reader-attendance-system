@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Scan QR Code{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center mb-0">Scan Student QR Code</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div id="reader"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-muted">Position the student's QR code within the scanner frame</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    function onScanSuccess(decodedText, decodedResult) {
+        // Stop scanner
+        html5QrcodeScanner.clear();
+        
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ url_for('main.admin_scan') }}";
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'student_username';
+        input.value = decodedText;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function onScanFailure(error) {
+        // Handle scan failure, usually better to ignore and keep scanning
+        console.warn(`QR error = ${error}`);
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: {width: 250, height: 250} },
+        false);
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+</script>
+{% endblock %}
+{% endblock %} 

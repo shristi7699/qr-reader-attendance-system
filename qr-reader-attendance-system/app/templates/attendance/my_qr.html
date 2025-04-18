@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}My QR Code - QR Attendance System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        <i class="fas fa-qrcode text-primary me-2"></i>
+                        Your QR Code
+                    </h2>
+                    <p class="lead mb-4">Show this QR code to the admin to mark your attendance</p>
+                    
+                    <div class="qr-container mb-4">
+                        <img src="{{ url_for('static', filename='qrcodes/' + current_user.qr_code) }}" 
+                             alt="Your QR Code" 
+                             class="img-fluid"
+                             style="max-width: 300px;">
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This QR code is unique to you. Do not share it with others.
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('static', filename='qrcodes/' + current_user.qr_code) }}" 
+                           class="btn btn-primary"
+                           download>
+                            <i class="fas fa-download me-2"></i>Download QR Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}View Attendance Records{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">Attendance Records</h3>
+                    <div>
+                        <a href="{{ url_for('admin.generate_report') }}" class="btn btn-success">
+                            <i class="fas fa-file-excel me-2"></i>Export to Excel
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Date Filter -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <form method="GET" class="d-flex">
+                                <div class="input-group">
+                                    <input type="date" class="form-control" name="date" value="{{ selected_date }}">
+                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Attendance Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student Name</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_records %}
+                                <tr>
+                                    <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ record.user.name }}</td>
+                                    <td>{{ record.check_in.strftime('%H:%M') if record.check_in else 'Not checked in' }}</td>
+                                    <td>{{ record.check_out.strftime('%H:%M') if record.check_out else 'Not checked out' }}</td>
+                                    <td>
+                                        <span class="badge {% if record.status == 'Present' %}bg-success{% elif record.status == 'Late' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ record.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No attendance records found for the selected date.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

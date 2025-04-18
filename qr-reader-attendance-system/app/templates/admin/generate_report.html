@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Attendance Report{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Generate Attendance Report</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Select Date Range</h5>
+                    <form method="POST" action="{{ url_for('admin.generate_report') }}">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-alt"></i> Generate Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Report Options</h5>
+                    <div class="list-group">
+                        <a href="{{ url_for('admin.export_attendance') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-download"></i> Export to Excel
+                        </a>
+                        <a href="{{ url_for('admin.view_attendance') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-table"></i> View Attendance Records
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if attendance_records %}
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Attendance Report</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Student Name</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                        <tr>
+                            <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ record.user.name }}</td>
+                            <td>{{ record.check_in.strftime('%H:%M:%S') if record.check_in else 'Not checked in' }}</td>
+                            <td>{{ record.check_out.strftime('%H:%M:%S') if record.check_out else 'Not checked out' }}</td>
+                            <td>
+                                <span class="badge {% if record.status == 'present' %}bg-success{% elif record.status == 'late' %}bg-warning{% elif record.status == 'early_leave' %}bg-info{% else %}bg-danger{% endif %}">
+                                    {{ record.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default dates (last 30 days)
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    document.getElementById('start_date').value = thirtyDaysAgo.toISOString().split('T')[0];
+    document.getElementById('end_date').value = today.toISOString().split('T')[0];
+});
+</script>
+{% endblock %} 

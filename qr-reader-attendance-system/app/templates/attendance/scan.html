@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Scan QR Code - QR Attendance System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center mb-4">
+                    <i class="fas fa-camera me-2"></i>Scan QR Code
+                </h5>
+                <div class="text-center mb-3">
+                    <video id="qr-video" class="img-fluid rounded" style="max-width: 640px;"></video>
+                </div>
+                <div id="qr-result" class="alert d-none"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('qr-video');
+    const resultDiv = document.getElementById('qr-result');
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function(stream) {
+            video.srcObject = stream;
+            video.play();
+            
+            // Create a canvas element to capture video frames
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            // Process frames every 100ms
+            setInterval(() => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Send frame to server
+                fetch("{{ url_for('attendance.process_qr') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: canvas.toDataURL('image/jpeg')
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultDiv.textContent = data.message;
+                        resultDiv.classList.remove('d-none', 'alert-danger');
+                        resultDiv.classList.add('alert-success');
+                        
+                        // Redirect to dashboard after successful scan
+                        setTimeout(() => {
+                            window.location.href = "{{ url_for('main.dashboard') }}";
+                        }, 2000);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }, 1000);
+        })
+        .catch(function(err) {
+            resultDiv.textContent = "Error accessing camera. Please make sure you have granted camera permissions.";
+            resultDiv.classList.remove('d-none');
+            resultDiv.classList.add('alert-danger');
+            console.error(err);
+        });
+});
+</script>
+{% endblock %} 

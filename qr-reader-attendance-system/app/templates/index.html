@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - QR Attendance System{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">Welcome to QR Attendance System</h1>
+        <p class="lead text-muted">Choose your access type to continue</p>
+    </div>
+    
+    <div class="row justify-content-center">
+        <!-- Admin Access Card -->
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 role-card">
+                <div class="card-body text-center p-5">
+                    <div class="role-icon mb-4">
+                        <i class="fas fa-user-shield fa-4x text-primary"></i>
+                    </div>
+                    <h3 class="card-title">Admin Access</h3>
+                    <p class="card-text">Access the admin portal to:</p>
+                    <ul class="list-unstyled text-start mb-4">
+                        <li><i class="fas fa-check text-success me-2"></i>Scan student QR codes</li>
+                        <li><i class="fas fa-check text-success me-2"></i>View all student attendance</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Generate attendance reports</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Monitor attendance statistics</li>
+                    </ul>
+                    <div class="mt-4">
+                        <a href="{{ url_for('auth.login', role='admin') }}" class="btn btn-primary btn-lg me-2">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="{{ url_for('auth.admin_register') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Access Card -->
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 role-card">
+                <div class="card-body text-center p-5">
+                    <div class="role-icon mb-4">
+                        <i class="fas fa-user-graduate fa-4x text-success"></i>
+                    </div>
+                    <h3 class="card-title">Student Access</h3>
+                    <p class="card-text">Access your student portal to:</p>
+                    <ul class="list-unstyled text-start mb-4">
+                        <li><i class="fas fa-check text-success me-2"></i>View your attendance records</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Track your attendance status</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Access your QR code</li>
+                        <li><i class="fas fa-check text-success me-2"></i>View attendance history</li>
+                    </ul>
+                    <div class="mt-4">
+                        <a href="{{ url_for('auth.login', role='student') }}" class="btn btn-success btn-lg me-2">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .role-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .role-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .role-icon {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .role-icon i {
+        transition: transform 0.3s;
+    }
+    
+    .role-card:hover .role-icon i {
+        transform: scale(1.1);
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        border-radius: 30px;
+    }
+    
+    .list-unstyled li {
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %} 
